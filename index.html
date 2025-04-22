@@ -4,23 +4,17 @@
   <meta charset="UTF-8" />
   <title>Chess vs AI</title>
 
-  <!-- Open Graph for preview -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta property="og:title" content="Play Chess vs AI" />
   <meta property="og:image" content="https://skillabsc.github.io/Farcaster-Chess/chess-thumbnail.png" />
-
-  <!-- Farcaster frame tags -->
   <meta name="fc:frame" content="vNext" />
   <meta name="fc:frame:image" content="https://skillabsc.github.io/Farcaster-Chess/chess-thumbnail.png" />
   <meta name="fc:frame:button:1" content="Play Now" />
   <meta name="fc:frame:post_url" content="https://skillabsc.github.io/Farcaster-Chess/index.html" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- Chessboard.js and chess.js -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css" />
-  <script src="https://cdn.jsdelivr.net/npm/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.13.4/chess.min.js"></script>
-
+  <!-- Chessboard.js and Chess.js -->
+  <link rel="stylesheet" href="https://unpkg.com/chessboardjs@1.0.0/www/css/chessboard-1.0.0.min.css" />
+  
   <style>
     body {
       background-color: #1e1e1e;
@@ -29,6 +23,7 @@
       text-align: center;
       padding-top: 30px;
     }
+
     #board {
       width: 90vw;
       max-width: 400px;
@@ -40,6 +35,10 @@
   <h1>Chess vs AI</h1>
   <div id="board"></div>
   <p id="status">Your move</p>
+
+  <!-- Load scripts at the end to ensure DOM is ready -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.13.4/chess.min.js"></script>
+  <script src="https://unpkg.com/chessboardjs@1.0.0/www/js/chessboard-1.0.0.min.js"></script>
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
