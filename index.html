@@ -1,74 +1,92 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Chess Mini App</title>
-  <meta property="og:title" content="Play Chess vs AI" />
-  <meta property="og:image" content="https://skillabsc.com/farcaster-chess/chess-thumbnail.png" />
-  <meta name="fc:frame" content="vNext" />
-  <meta name="fc:frame:image" content="https://skillabsc.com/farcaster-chess/chess-thumbnail.png" />
-  <meta name="fc:frame:button:1" content="Play Now" />
-  <meta name="fc:frame:post_url" content="https://skillabsc.com/farcaster-chess/index.html" />
+  <meta charset="UTF-8" />
+  <title>Chess vs AI</title>
 
-  <link <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css" />
+  <!-- Open Graph for preview -->
+  <meta property="og:title" content="Play Chess vs AI" />
+  <meta property="og:image" content="https://skillabsc.github.io/Farcaster-Chess/chess-thumbnail.png" />
+
+  <!-- Farcaster frame tags -->
+  <meta name="fc:frame" content="vNext" />
+  <meta name="fc:frame:image" content="https://skillabsc.github.io/Farcaster-Chess/chess-thumbnail.png" />
+  <meta name="fc:frame:button:1" content="Play Now" />
+  <meta name="fc:frame:post_url" content="https://skillabsc.github.io/Farcaster-Chess/index.html" />
+
+  <!-- Chessboard.js and chess.js -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.13.4/chess.min.js"></script>
 
   <style>
     body {
+      background-color: #1e1e1e;
+      color: white;
       font-family: sans-serif;
       text-align: center;
+      padding-top: 30px;
     }
     #board {
-      width: 360px;
+      width: 350px;
       margin: 20px auto;
-    }
-    #status {
-      margin-top: 10px;
-      font-weight: bold;
     }
   </style>
 </head>
-  <meta property="og:image" content="https://skillabsc.github.io/farcaster-chess/chess-thumbnail.png" />
-<meta name="fc:frame:image" content="https://skillabsc.github.io/farcaster-chess/chess-thumbnail.png" />
-
 <body>
-  <h2>Chess vs AI</h2>
+  <h1>Chess vs AI</h1>
   <div id="board"></div>
-  <div id="status">Your move</div>
+  <p id="status">Your move</p>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.13.4/chess.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
   <script>
-    const game = new Chess();
+    var board = null;
+    var game = new Chess();
 
-    const board = Chessboard('board', {
-      draggable: true,
-      position: 'start',
-      onDrop: onDrop
-    });
-
-    function onDrop(source, target) {
-      const move = game.move({ from: source, to: target, promotion: 'q' });
-      if (move === null) return 'snapback';
-      updateStatus();
-      setTimeout(makeAIMove, 500);
+    function onDragStart (source, piece) {
+      if (game.game_over() || piece.search(/^b/) !== -1) return false;
     }
 
-    function makeAIMove() {
-      if (game.game_over()) return;
-      const moves = game.moves();
-      const move = moves[Math.floor(Math.random() * moves.length)];
-      game.move(move);
+    function makeBestMove () {
+      var bestMove = getBestMove(game);
+      game.move(bestMove);
       board.position(game.fen());
       updateStatus();
     }
 
-    function updateStatus() {
-      let status = '';
-      if (game.in_checkmate()) status = 'Checkmate!';
-      else if (game.in_draw()) status = 'Draw!';
-      else status = game.turn() === 'w' ? 'Your move' : 'AI is thinking...';
-      document.getElementById('status').innerText = status;
+    function getBestMove (game) {
+      var possibleMoves = game.moves();
+      if (possibleMoves.length === 0) return;
+      var randomIdx = Math.floor(Math.random() * possibleMoves.length);
+      return possibleMoves[randomIdx];
     }
+
+    function onDrop (source, target) {
+      var move = game.move({ from: source, to: target, promotion: 'q' });
+      if (move === null) return 'snapback';
+      window.setTimeout(makeBestMove, 250);
+      updateStatus();
+    }
+
+    function updateStatus () {
+      var status = '';
+      if (game.in_checkmate()) {
+        status = 'Game over, you lost.';
+      } else if (game.in_draw()) {
+        status = 'Draw!';
+      } else {
+        status = 'Your move';
+      }
+      document.getElementById('status').innerHTML = status;
+    }
+
+    var config = {
+      draggable: true,
+      position: 'start',
+      onDragStart: onDragStart,
+      onDrop: onDrop
+    };
+
+    board = Chessboard('board', config);
   </script>
 </body>
 </html>
