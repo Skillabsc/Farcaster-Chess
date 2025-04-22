@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Chess Mini App</title>
+  <meta property="og:title" content="Play Chess vs AI" />
+  <meta property="og:image" content="https://yourdomain.com/chess-thumbnail.png" />
+  <meta name="fc:frame" content="vNext" />
+  <meta name="fc:frame:image" content="https://yourdomain.com/chess-thumbnail.png" />
+  <meta name="fc:frame:button:1" content="Play Now" />
+  <meta name="fc:frame:post_url" content="https://yourdomain.com/index.html" />
+
+  <link rel="stylesheet" href="https://unpkg.com/chessboardjs@1.0.0/www/css/chessboard.css" />
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+    }
+    #board {
+      width: 360px;
+      margin: 20px auto;
+    }
+    #status {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h2>Chess vs AI</h2>
+  <div id="board"></div>
+  <div id="status">Your move</div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.13.4/chess.min.js"></script>
+  <script src="https://unpkg.com/chessboardjs@1.0.0/www/js/chessboard.js"></script>
+  <script>
+    const game = new Chess();
+
+    const board = Chessboard('board', {
+      draggable: true,
+      position: 'start',
+      onDrop: onDrop
+    });
+
+    function onDrop(source, target) {
+      const move = game.move({ from: source, to: target, promotion: 'q' });
+      if (move === null) return 'snapback';
+      updateStatus();
+      setTimeout(makeAIMove, 500);
+    }
+
+    function makeAIMove() {
+      if (game.game_over()) return;
+      const moves = game.moves();
+      const move = moves[Math.floor(Math.random() * moves.length)];
+      game.move(move);
+      board.position(game.fen());
+      updateStatus();
+    }
+
+    function updateStatus() {
+      let status = '';
+      if (game.in_checkmate()) status = 'Checkmate!';
+      else if (game.in_draw()) status = 'Draw!';
+      else status = game.turn() === 'w' ? 'Your move' : 'AI is thinking...';
+      document.getElementById('status').innerText = status;
+    }
+  </script>
+</body>
+</html>
