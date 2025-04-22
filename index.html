@@ -14,6 +14,8 @@
   <meta name="fc:frame:button:1" content="Play Now" />
   <meta name="fc:frame:post_url" content="https://skillabsc.github.io/Farcaster-Chess/index.html" />
 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <!-- Chessboard.js and chess.js -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
@@ -28,7 +30,8 @@
       padding-top: 30px;
     }
     #board {
-      width: 350px;
+      width: 90vw;
+      max-width: 400px;
       margin: 20px auto;
     }
   </style>
@@ -39,54 +42,58 @@
   <p id="status">Your move</p>
 
   <script>
-    var board = null;
-    var game = new Chess();
+    document.addEventListener('DOMContentLoaded', function () {
+      var board = null;
+      var game = new Chess();
 
-    function onDragStart (source, piece) {
-      if (game.game_over() || piece.search(/^b/) !== -1) return false;
-    }
-
-    function makeBestMove () {
-      var bestMove = getBestMove(game);
-      game.move(bestMove);
-      board.position(game.fen());
-      updateStatus();
-    }
-
-    function getBestMove (game) {
-      var possibleMoves = game.moves();
-      if (possibleMoves.length === 0) return;
-      var randomIdx = Math.floor(Math.random() * possibleMoves.length);
-      return possibleMoves[randomIdx];
-    }
-
-    function onDrop (source, target) {
-      var move = game.move({ from: source, to: target, promotion: 'q' });
-      if (move === null) return 'snapback';
-      window.setTimeout(makeBestMove, 250);
-      updateStatus();
-    }
-
-    function updateStatus () {
-      var status = '';
-      if (game.in_checkmate()) {
-        status = 'Game over, you lost.';
-      } else if (game.in_draw()) {
-        status = 'Draw!';
-      } else {
-        status = 'Your move';
+      function onDragStart(source, piece) {
+        if (game.game_over() || piece.search(/^b/) !== -1) return false;
       }
-      document.getElementById('status').innerHTML = status;
-    }
 
-    var config = {
-      draggable: true,
-      position: 'start',
-      onDragStart: onDragStart,
-      onDrop: onDrop
-    };
+      function makeBestMove() {
+        var bestMove = getBestMove(game);
+        if (bestMove) {
+          game.move(bestMove);
+          board.position(game.fen());
+          updateStatus();
+        }
+      }
 
-    board = Chessboard('board', config);
+      function getBestMove(game) {
+        var possibleMoves = game.moves();
+        if (possibleMoves.length === 0) return null;
+        var randomIdx = Math.floor(Math.random() * possibleMoves.length);
+        return possibleMoves[randomIdx];
+      }
+
+      function onDrop(source, target) {
+        var move = game.move({ from: source, to: target, promotion: 'q' });
+        if (move === null) return 'snapback';
+        window.setTimeout(makeBestMove, 250);
+        updateStatus();
+      }
+
+      function updateStatus() {
+        var status = '';
+        if (game.in_checkmate()) {
+          status = 'Game over, you lost.';
+        } else if (game.in_draw()) {
+          status = 'Draw!';
+        } else {
+          status = 'Your move';
+        }
+        document.getElementById('status').innerHTML = status;
+      }
+
+      var config = {
+        draggable: true,
+        position: 'start',
+        onDragStart: onDragStart,
+        onDrop: onDrop
+      };
+
+      board = Chessboard('board', config);
+    });
   </script>
 </body>
 </html>
